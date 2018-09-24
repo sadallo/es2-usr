@@ -3,19 +3,12 @@ from flask import Flask
 import psycopg2
 from consultas import Consulta
 
-#DATABASE_URL = os.environ["postgres://atjdndhmjguhhv:9dcfd97ed53dac7246f96df9a090937f60bc12f4eba0146da001bf17420826a4@ec2-54-235-193-34.compute-1.amazonaws.com:5432/df243cki5tuf5r"]
-
-
 app = Flask(__name__)
 
-@app.route('/consultar/<identificador>')
-def consultar(identificador):
-	conn = psycopg2.connect(database= DATA, user= USER, password=PASS, host=HOST, port=PORT, sslmode=SSL)
-	cursor = conn.cursor()
-	cursor.execute("select * from users where id="+identificador)
-	records = cursor.fetchall()
-	return str(records)
-
+@app.route('/getuser/<identificador>')
+def getuser(identificador):
+	user = Consulta().getuser(identificador)
+	return user
 
 @app.route('/cadastrar/<login>&<name>&<bio>')
 def cadastrar(login, name, bio):
@@ -29,13 +22,33 @@ def remover(identificador):
 	return ""
 
 
+@app.route('/follow/<follower>&<followed>')
+def follow(follower, followed):
+	Consulta().follow(follower, followed)
+	return ""
+
+
+@app.route('/unfollow/<follower>&<followed>')
+def unfollow(follower, followed):
+	Consulta().unfollow(follower, followed)
+	return ""
+
+
+@app.route('/users/')
+def users():
+	records = Consulta().users()
+	return records
+
+
+@app.route('/follows/')
+def follows():
+	records = Consulta().follows()
+	return records
+
+
 @app.route('/')
 def home():
-	return "Hello worlaaaaad"
-
-@app.route('/db')
-def connect_db():
-	return "conexao db"
+	return "Light Twitter - Modulo de Usuarios - Gabriel Almeida, Gabriel Soares, Henrique Fonseca e Sadallo Andere"
 
 
 if __name__ == "__main__":

@@ -13,24 +13,55 @@ class Consulta:
 	def __init__(self):
 		self.conn = psycopg2.connect(database=DATA, user=USER, password=PASS, host=HOST, port=PORT, sslmode=SSL)			
 
+	def getuser(self, identificador):
+		cursor = self.conn.cursor()
+		sql = "SELECT * FROM users WHERE id = {}".format(identificador)
+		cursor.execute(sql)
+		records = cursor.fetchall()
+		if len(records) == 0:
+			return ""
+		else:
+			return str(records[0])
+
+
 	def cadastrar(self, login, name, bio):
 		cursor = self.conn.cursor()
-		sql = "insert into users (login, name, bio) values (%s, %s, %s)"
-		val = (login, name, bio)
-		cursor.execute(sql, val)
+		sql = "INSERT INTO users (login, name, bio) VALUES ('{}', '{}', '{}')".format(login, name, bio)
+		cursor.execute(sql)
 		self.conn.commit()
 		
+
 	def remover(self, identificador):
 		cursor = self.conn.cursor()
-		sql = "delete from users where id = %s"
-		val = (str(identificador))
-		cursor.execute(sql, val)
+		sql = "DELETE FROM users WHERE id = {}".format(identificador)
+		cursor.execute(sql)
 		self.conn.commit()
 
-	def seguir(self, follower, followed):
+
+	def follow(self, follower, followed):
 		cursor = self.conn.cursor()
-		cursor.execute('insert into users values ('+follower+','+followed+')')
+		sql = "INSERT INTO follows VALUES ({}, {}) ON CONFLICT (follower, followed) DO NOTHING".format(follower, followed)
+		cursor.execute(sql)
+		self.conn.commit()
 		
-	def pararDeSeguir(self, follower, followed):
+
+	def unfollow(self, follower, followed):
 		cursor = self.conn.cursor()
-		cursor.execute('delete from users where follower = '+follower+' and followed = '+followed)
+		sql = "DELETE FROM follows WHERE follower = {} AND followed = {}".format(follower, followed)
+		cursor.execute(sql)
+		self.conn.commit()
+
+
+	def users(self):
+		cursor = self.conn.cursor()
+		sql = "SELECT * FROM users"
+		cursor.execute(sql)
+		records = cursor.fetchall()
+		return str(records)
+
+	def follows(self):
+		cursor = self.conn.cursor()
+		sql = "SELECT * FROM follows"
+		cursor.execute(sql)
+		records = cursor.fetchall()
+		return str(records)
