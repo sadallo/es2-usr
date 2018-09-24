@@ -16,7 +16,11 @@ app = Flask(__name__)
 @app.route('/conn')
 def consulta():
 	conn = psycopg2.connect(database= DATA, user= USER, password=PASS, host=HOST, port=PORT, sslmode=SSL)
-	#conn = psycopg2.connect(DATABASE_URL, sslmode="require")
+	conn = psycopg2.connect(DATABASE_URL, sslmode="require")
+	cursor = conn.cursor()
+	cursor.execute("select * from users")
+	records = cursor.fetchall()
+	return records
 	'''cursor = conn.cursor()
 	cursor.execute("select * from estado where uf = '"+arg.upper()+"'")
 	records = cursor.fetchall()
