@@ -2,6 +2,7 @@ import os
 from flask import Flask
 import psycopg2
 from consultas import Consulta
+import data
 
 app = Flask(__name__)
 
