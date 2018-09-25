@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, request, Response, json, jsonify
 import psycopg2
 from consultas import Consulta
 import data
@@ -44,7 +44,24 @@ def users():
 @app.route('/follows/')
 def follows():
 	records = Consulta().follows()
-	return records
+	return str(records)
+
+
+# retorna os seguidores de follower
+@app.route('/getfollowers/<followed>')
+def followers(followed):
+	records = Consulta().getFollowers(followed);
+	return str(records)
+
+# retorna os usuarios seguidos por follower
+@app.route('/getfollowed/<follower>', methods=['GET'])
+def followed(follower):
+	data = {
+		follower : Consulta().getFollowed(follower)
+	}
+	js = json.dumps(data)
+	response = Response(response=js, status=200, mimetype='application/json')
+	return response
 
 
 @app.route('/')
@@ -54,4 +71,4 @@ def home():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='127.0.0.3', port=port, debug=True)

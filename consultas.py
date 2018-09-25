@@ -1,13 +1,6 @@
 import psycopg2
 
-
-USER="atjdndhmjguhhv"
-PASS="9dcfd97ed53dac7246f96df9a090937f60bc12f4eba0146da001bf17420826a4"
-HOST="ec2-54-235-193-34.compute-1.amazonaws.com"
-PORT=5432
-DATA="df243cki5tuf5r"
-SSL="require"
-
+from data import DATA, USER, PASS, HOST, PORT, SSL
 
 class Consulta:
 	def __init__(self):
@@ -52,6 +45,32 @@ class Consulta:
 		self.conn.commit()
 
 
+	def getFollowers(self, followed):
+		cursor = self.conn.cursor()
+		sql = "SELECT follower FROM follows WHERE followed = {}".format(followed)
+		cursor.execute(sql)
+		records = cursor.fetchall()
+		if len(records) == 0:
+			return ""
+		else:
+			return records
+
+
+	def getFollowed(self, follower):
+		cursor = self.conn.cursor()
+		sql = "SELECT json_agg(followed) FROM follows WHERE follower = {}".format(follower)
+		#sql = "SELECT followed FROM follows WHERE follower = {}".format(follower)
+		cursor.execute(sql)
+		records = cursor.fetchall()
+		if len(records) == 0:
+			return ""
+		else:
+			return records[0][0]
+			#return records
+
+
+#auxiliares
+
 	def users(self):
 		cursor = self.conn.cursor()
 		sql = "SELECT * FROM users"
@@ -64,4 +83,4 @@ class Consulta:
 		sql = "SELECT * FROM follows"
 		cursor.execute(sql)
 		records = cursor.fetchall()
-		return str(records)
+		return records
