@@ -8,8 +8,12 @@ app = Flask(__name__)
 
 @app.route('/getuser/<identificador>')
 def getuser(identificador):
-	user = Consulta().getuser(identificador)
-	return user
+	data = {
+		identificador : Consulta().getuser(identificador)
+	}
+	js = json.dumps(data)
+	response = Response(response=js, status=200, mimetype='application/json')
+	return response
 
 @app.route('/cadastrar/<login>&<name>&<bio>')
 def cadastrar(login, name, bio):
@@ -50,10 +54,15 @@ def follows():
 # retorna os seguidores de follower
 @app.route('/getfollowers/<followed>')
 def followers(followed):
-	records = Consulta().getFollowers(followed);
-	return str(records)
+	data = {
+		followed : Consulta().getFollowers(followed)
+	}
+	js = json.dumps(data)
+	response = Response(response=js, status=200, mimetype='application/json')
+	return response
 
-# retorna os usuarios seguidos por follower
+
+# retorna os usuarios seguidos por follower em forma de json
 @app.route('/getfollowed/<follower>', methods=['GET'])
 def followed(follower):
 	data = {

@@ -14,7 +14,7 @@ class Consulta:
 		if len(records) == 0:
 			return ""
 		else:
-			return str(records[0])
+			return records[0]
 
 
 	def cadastrar(self, login, name, bio):
@@ -47,26 +47,24 @@ class Consulta:
 
 	def getFollowers(self, followed):
 		cursor = self.conn.cursor()
-		sql = "SELECT follower FROM follows WHERE followed = {}".format(followed)
-		cursor.execute(sql)
-		records = cursor.fetchall()
-		if len(records) == 0:
-			return ""
-		else:
-			return records
-
-
-	def getFollowed(self, follower):
-		cursor = self.conn.cursor()
-		sql = "SELECT json_agg(followed) FROM follows WHERE follower = {}".format(follower)
-		#sql = "SELECT followed FROM follows WHERE follower = {}".format(follower)
+		sql = "SELECT json_agg(follower) FROM follows WHERE followed = {}".format(followed)
 		cursor.execute(sql)
 		records = cursor.fetchall()
 		if len(records) == 0:
 			return ""
 		else:
 			return records[0][0]
-			#return records
+
+
+	def getFollowed(self, follower):
+		cursor = self.conn.cursor()
+		sql = "SELECT json_agg(followed) FROM follows WHERE follower = {}".format(follower)
+		cursor.execute(sql)
+		records = cursor.fetchall()
+		if len(records) == 0:
+			return ""
+		else:
+			return records[0][0]
 
 
 #auxiliares
